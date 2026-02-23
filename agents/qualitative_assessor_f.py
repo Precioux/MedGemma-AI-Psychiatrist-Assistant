@@ -14,7 +14,7 @@ class QualitativeAssessor:
             {interview_text}
 
                Please:
-              1. Provide an overall qualitative assessment of the subject's mental health.
+              1. Provide an overall qualitative assessment of the subject's mental healmath.
               2. Summarize PHQ-8 symptoms if available (if not, state 'not available'), as well as frequency and severity if available.
               3. Summarize social aspects that may influence the subject's mental health. (for example, familial relationships, frienship dynamics, work environment, etc. that are relevant to the subjects mental health)
               4. Summarize biological aspects that may influence the subject's mental health. (for example, famillial history of mental health issues, previous or pre-existing mental health issues, stress levels, etc. that are relevant to the subjects mental health)

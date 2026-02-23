@@ -1,6 +1,6 @@
-# 🧠 MedGemma AI Psychiatrist
+# 🧠 MedGemma AI Psychiatrist Assistant
 
-> An AI-powered depression screening pipeline built on [MedGemma](https://huggingface.co/google/medgemma), Google's medical-domain fine-tuned LLM. Developed for the MedGemma Competition.
+> An AI-powered depression screening assistant built on [MedGemma](https://huggingface.co/google/medgemma), Google's medical-domain fine-tuned LLM. Designed to support — not replace — clinical psychiatrists by providing structured, evidence-backed first-pass analysis of psychiatric interview transcripts.
 
 ![Python](https://img.shields.io/badge/Python-3.10+-blue?logo=python)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-green?logo=fastapi)
@@ -9,13 +9,25 @@
 
 ---
 
+## 📸 Demo
+
+| Input & Pipeline | PHQ-8 Scores | Qualitative Analysis |
+|:---:|:---:|:---:|
+| ![Input](assets/1.png) | ![Scores](assets/2.png) | ![Qualitative](assets/3.png) |
+
+> 🎬 **[Watch the full demo video on YouTube](#)** ← replace `#` with your YouTube link
+
+---
+
 ## Overview
 
-MedGemma AI Psychiatrist is a multi-agent clinical pipeline that analyzes psychiatric interview transcripts to screen for depression. It uses the **PHQ-8** (Patient Health Questionnaire-8) as its clinical framework and produces both quantitative scores and qualitative risk assessments, evaluated and synthesized by a chain of specialized AI agents.
+MedGemma AI Psychiatrist Assistant is a multi-agent clinical pipeline that analyzes psychiatric interview transcripts to screen for depression. It uses the **PHQ-8** (Patient Health Questionnaire-8) as its clinical framework and produces both quantitative scores and qualitative risk assessments, evaluated and synthesized by a chain of specialized AI agents.
+
+The system is intended as a **clinical decision support tool** — providing psychiatrists with a structured, evidence-backed pre-analysis so they can focus their expertise on diagnosis and treatment rather than documentation.
 
 The system supports two modes:
-- **Zero-Shot (Z):** Direct inference with no reference examples
-- **Few-Shot (F):** Inference guided by structured clinical reasoning templates
+- **Zero-Shot (Z):** Direct inference with no reference examples — faster and more concise
+- **Few-Shot (F):** Inference guided by structured clinical reasoning templates co-designed with psychiatrists
 
 ---
 
@@ -63,7 +75,7 @@ Transcript Input
 | # | Agent | Role |
 |---|-------|------|
 | 0 | **InterviewSimulator** | Loads and validates E-DAIC format transcripts |
-| 1 | **QuantitativeAssessor** | Scores all 8 PHQ-8 items (0–3 or N/A) with evidence |
+| 1 | **QuantitativeAssessor** | Scores all 8 PHQ-8 items (0–3 or N/A) with transcript evidence |
 | 2 | **QualitativeAssessor** | Analyzes social, biological, and overall mental health factors |
 | 3 | **QualitativeEvaluator** | Scores the qualitative assessment on 4 metrics (1–5 each) |
 | 4 | **MetaReviewer** | Synthesizes all outputs into a final diagnosis and severity label |
@@ -88,9 +100,9 @@ The project includes a browser-based UI served at `http://localhost:8000`:
 
 - Upload `.txt` or `.csv` transcript files (E-DAIC format, UTF-8)
 - Select Zero-Shot or Few-Shot assessment mode
-- Real-time pipeline progress tracking
+- Step-by-step pipeline progress tracking
 - PHQ-8 score grid with color-coded severity bar
-- Structured qualitative risk factor display
+- Structured qualitative risk factor display with exact transcript quotes
 - Assessment quality scores (coherence, completeness, accuracy, specificity)
 - Final diagnosis badge with severity level
 
@@ -137,7 +149,7 @@ ollama pull alibayram/medgemma
 python main.py
 ```
 
-The browser will open automatically at `http://localhost:8000`.
+Open your browser at `http://localhost:8000`.
 
 1. Upload a transcript file (`.txt` or `.csv`, E-DAIC format)
 2. Select **Zero-Shot** or **Few-Shot** mode
@@ -145,8 +157,6 @@ The browser will open automatically at `http://localhost:8000`.
 4. Results appear after ~2–5 minutes depending on transcript length
 
 ### API
-
-The pipeline is also accessible via REST API:
 
 ```bash
 # Run full pipeline (mode 0 = Zero-Shot, mode 1 = Few-Shot)
@@ -176,8 +186,10 @@ MedGemma-Competition/
 ├── data/
 │   ├── transcripts/                 # Input transcript files
 │   └── source/                      # Raw CSV source files
-├── utils/
-│   └── transcript_processor.py      # E-DAIC preprocessing utilities
+├── assets/                          # Screenshots for README
+│   ├── 1.png
+│   ├── 2.png
+│   └── 3.png
 ├── index.html                       # Web UI
 ├── server.py                        # FastAPI server
 ├── main.py                          # Application launcher
@@ -206,7 +218,7 @@ This project uses **[alibayram/medgemma](https://ollama.com/alibayram/medgemma)*
 **Hardware recommendations:**
 - Apple Silicon (M1/M2/M3) — runs fully on GPU via Metal
 - NVIDIA GPU with 8GB+ VRAM recommended for best performance
-- CPU inference is supported but significantly slower
+- CPU inference supported but significantly slower
 
 ---
 
@@ -225,6 +237,15 @@ Each metric is scored 1–5 where 5 = no errors.
 
 ---
 
+## Reference
+
+If you use this work, please also cite the paper that inspired this system:
+
+> **AI Psychiatrist Assistant: An LLM-based Multi-Agent System for Depression Assessment from Clinical Interviews**
+> [https://openreview.net/forum?id=mV0xJpO7A0](https://openreview.net/forum?id=mV0xJpO7A0)
+
+---
+
 ## Acknowledgements
 
 - [Google MedGemma](https://developers.google.com/health-ai-developer-foundations/medgemma) — base medical LLM
@@ -239,4 +260,4 @@ Each metric is scored 1–5 where 5 = no errors.
 
 ---
 
-> ⚠️ **Disclaimer:** This tool is intended for research purposes only and is not a substitute for professional psychiatric evaluation. All outputs should be reviewed by a qualified clinician.
+> ⚠️ **Disclaimer:** This tool is intended to **assist** qualified psychiatrists and is not a substitute for professional clinical evaluation. All outputs must be reviewed by a licensed clinician before informing any diagnostic or treatment decision.
