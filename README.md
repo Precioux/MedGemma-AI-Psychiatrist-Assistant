@@ -1,6 +1,6 @@
 # 🧠 MedGemma AI Psychiatrist Assistant
 
-> An AI-powered depression screening assistant built on [MedGemma](https://huggingface.co/google/medgemma), Google's medical-domain fine-tuned LLM. Designed to support — not replace — clinical psychiatrists by providing structured, evidence-backed first-pass analysis of psychiatric interview transcripts.
+> An AI-powered depression screening assistant built on [MedGemma](https://huggingface.co/google/medgemma), Google's medical-domain fine-tuned LLM. Designed to **support — not replace** — clinical psychiatrists by providing structured, evidence-backed first-pass analysis of psychiatric interview transcripts.
 
 ![Python](https://img.shields.io/badge/Python-3.10+-blue?logo=python)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-green?logo=fastapi)
@@ -9,13 +9,15 @@
 
 ---
 
-## 📸 Demo
+## Demo
 
-| Input & Pipeline | PHQ-8 Scores | Qualitative Analysis |
-|:---:|:---:|:---:|
-| ![Input](assets/1.png) | ![Scores](assets/2.png) | ![Qualitative](assets/3.png) |
+> 🎬 **[Watch the full demo video on YouTube](#)** ← replace with your YouTube link
 
-> 🎬 **[Watch the full demo video on YouTube](#)** ← replace `#` with your YouTube link
+![Input and pipeline progress](data/1.png)
+
+![PHQ-8 quantitative scores](data/2.png)
+
+![Qualitative risk factor analysis and final diagnosis](data/3.png)
 
 ---
 
@@ -185,11 +187,10 @@ MedGemma-Competition/
 │   └── meta_reviewer.py             # Step 4: Final diagnosis synthesis
 ├── data/
 │   ├── transcripts/                 # Input transcript files
-│   └── source/                      # Raw CSV source files
-├── assets/                          # Screenshots for README
-│   ├── 1.png
-│   ├── 2.png
-│   └── 3.png
+│   ├── source/                      # Raw CSV source files
+│   ├── 1.png                        # Screenshot: input & pipeline
+│   ├── 2.png                        # Screenshot: PHQ-8 scores
+│   └── 3.png                        # Screenshot: qualitative analysis
 ├── index.html                       # Web UI
 ├── server.py                        # FastAPI server
 ├── main.py                          # Application launcher
@@ -238,8 +239,6 @@ Each metric is scored 1–5 where 5 = no errors.
 ---
 
 ## Reference
-
-If you use this work, please also cite the paper that inspired this system:
 
 > **AI Psychiatrist Assistant: An LLM-based Multi-Agent System for Depression Assessment from Clinical Interviews**
 > [https://openreview.net/forum?id=mV0xJpO7A0](https://openreview.net/forum?id=mV0xJpO7A0)
