@@ -27,9 +27,9 @@ MedGemma AI Psychiatrist Assistant is a multi-agent clinical pipeline that analy
 
 The system is intended as a **clinical decision support tool** — providing psychiatrists with a structured, evidence-backed pre-analysis so they can focus their expertise on diagnosis and treatment rather than documentation.
 
-The system supports two modes:
-- **Zero-Shot (Z):** Direct inference with no reference examples — faster and more concise
-- **Few-Shot (F):** Inference guided by structured clinical reasoning templates co-designed with psychiatrists
+The system supports two assessment modes:
+- **Zero-Shot (Z):** MedGemma reasons directly from the transcript with no reference examples — fast and concise
+- **Few-Shot (F):** Uses **RAG (Retrieval-Augmented Generation)** — an embedding model retrieves the most clinically similar cases from the DAIC-WOZ database and provides them as examples to guide MedGemma's reasoning, improving output depth and clinical alignment. Prompts were co-designed with practicing psychiatrists.
 
 ---
 
@@ -53,6 +53,7 @@ Transcript Input
 ┌─────────────────────┐
 │ QualitativeAssessor │  Step 2 — Risk factor analysis
 │   (Z or F variant)  │           (social, biological, overall)
+│   Few-Shot uses RAG │           RAG retrieves similar DAIC-WOZ cases
 └─────────┬───────────┘
           │
           ▼
@@ -78,9 +79,19 @@ Transcript Input
 |---|-------|------|
 | 0 | **InterviewSimulator** | Loads and validates E-DAIC format transcripts |
 | 1 | **QuantitativeAssessor** | Scores all 8 PHQ-8 items (0–3 or N/A) with transcript evidence |
-| 2 | **QualitativeAssessor** | Analyzes social, biological, and overall mental health factors |
+| 2 | **QualitativeAssessor** | Analyzes social, biological, and overall mental health factors. Few-Shot variant uses RAG over DAIC-WOZ |
 | 3 | **QualitativeEvaluator** | Scores the qualitative assessment on 4 metrics (1–5 each) |
 | 4 | **MetaReviewer** | Synthesizes all outputs into a final diagnosis and severity label |
+
+---
+
+## Assessment Modes
+
+### Zero-Shot (Z)
+MedGemma receives the transcript and reasons directly from its medical knowledge. Fast, lightweight, and effective for straightforward cases.
+
+### Few-Shot (F) with RAG
+An embedding model encodes the input transcript and retrieves the most clinically similar interview cases from the **DAIC-WOZ** (Distress Analysis Interview Corpus) database. These retrieved examples are provided alongside the transcript as few-shot context, guiding MedGemma to produce more structured, clinically grounded outputs. The qualitative prompts used in this mode were co-designed with a team of practicing psychiatrists.
 
 ---
 
@@ -101,12 +112,22 @@ Transcript Input
 The project includes a browser-based UI served at `http://localhost:8000`:
 
 - Upload `.txt` or `.csv` transcript files (E-DAIC format, UTF-8)
-- Select Zero-Shot or Few-Shot assessment mode
+- Select Zero-Shot or Few-Shot (RAG) assessment mode
 - Step-by-step pipeline progress tracking
 - PHQ-8 score grid with color-coded severity bar
 - Structured qualitative risk factor display with exact transcript quotes
 - Assessment quality scores (coherence, completeness, accuracy, specificity)
 - Final diagnosis badge with severity level
+
+---
+
+## Design Philosophy
+
+This system was built in close collaboration with practicing psychiatrists. Three core principles guided every decision:
+
+- **Simple** — no technical knowledge required from the clinician
+- **Lightweight** — runs entirely on an ordinary laptop using MedGemma's 4B parameter model
+- **Private** — no cloud connection, no external API calls; patient data never leaves the device
 
 ---
 
@@ -161,7 +182,7 @@ Open your browser at `http://localhost:8000`.
 ### API
 
 ```bash
-# Run full pipeline (mode 0 = Zero-Shot, mode 1 = Few-Shot)
+# Run full pipeline (mode 0 = Zero-Shot, mode 1 = Few-Shot with RAG)
 curl -X POST http://localhost:8000/full_pipeline \
   -H "Content-Type: application/json" \
   -d '{"mode": 0}'
@@ -180,14 +201,15 @@ MedGemma-Competition/
 ├── agents/
 │   ├── interview_simulator.py       # Step 0: Transcript loader
 │   ├── quantitative_assessor_z.py   # Step 1: PHQ-8 scoring (Zero-Shot)
-│   ├── quantitative_assessor_f.py   # Step 1: PHQ-8 scoring (Few-Shot)
+│   ├── quantitative_assessor_f.py   # Step 1: PHQ-8 scoring (Few-Shot + RAG)
 │   ├── qualitative_assessor_z.py    # Step 2: Risk analysis (Zero-Shot)
-│   ├── qualitative_assessor_f.py    # Step 2: Risk analysis (Few-Shot)
+│   ├── qualitative_assessor_f.py    # Step 2: Risk analysis (Few-Shot + RAG)
 │   ├── qualitative_evaluator.py     # Step 3: Assessment quality scoring
 │   └── meta_reviewer.py             # Step 4: Final diagnosis synthesis
 ├── data/
 │   ├── transcripts/                 # Input transcript files
-│   ├── source/                      # Raw CSV source files
+│   ├── source/                      # Raw DAIC-WOZ CSV source files
+│   ├── embeddings/                  # Precomputed DAIC-WOZ embeddings for RAG
 │   ├── 1.png                        # Screenshot: input & pipeline
 │   ├── 2.png                        # Screenshot: PHQ-8 scores
 │   └── 3.png                        # Screenshot: qualitative analysis
@@ -248,17 +270,14 @@ Each metric is scored 1–5 where 5 = no errors.
 ## Acknowledgements
 
 - [Google MedGemma](https://developers.google.com/health-ai-developer-foundations/medgemma) — base medical LLM
-- [E-DAIC Dataset](https://dcapswoz.ict.usc.edu/) — depression interview corpus
+- [DAIC-WOZ Dataset](https://dcapswoz.ict.usc.edu/) — depression interview corpus used for RAG retrieval
 - [PHQ-8](https://www.phqscreeners.com/) — Patient Health Questionnaire
 
 ---
 
 ## Author
 
-- **Samin Mahdipour Aghabagher** — [@Precioux](https://github.com/Precioux)
-- **Xinhui Li** — [@XinhuiLi](https://github.com/XinhuiLi)
-
-
+**Precioux** — [@Precioux](https://github.com/Precioux)
 
 ---
 

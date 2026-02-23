@@ -35,6 +35,8 @@ class QualitativeEvaluatorAgent:
         self.endpoint = endpoint
 
     def assess(self, transcript, qualitative_output: str):
+        # Truncate transcript to first 800 chars to stay well within context window
+        transcript = transcript[:800] + ("..." if len(transcript) > 800 else "")
         result = {}
 
         # metric prompts
@@ -99,7 +101,14 @@ Score: [1-5]"""
                 "model": self.model,
                 "messages": [{"role": "user", "content": prompts[label]}],
                 "stream": False,
-                "options": {"temperature": 0, "top_k": 20, "top_p": 0.9}
+                "options": {
+                    "temperature": 0,
+                    "top_k": 20,
+                    "top_p": 0.9,
+                    "repeat_penalty": 1.3,   # prevents repetition loops
+                    "num_predict": 120,       # score + brief explanation is all we need
+                    "stop": ["Score:", "\n\n\n"]
+                }
             }
             reqs[label] = request
 

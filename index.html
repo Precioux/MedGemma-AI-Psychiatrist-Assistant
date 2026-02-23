@@ -609,7 +609,7 @@
 <div class="metrics-row">
   <div class="metric-card">
     <div class="m-label">Agents</div>
-    <div class="m-val">6</div>
+    <div class="m-val">5</div>
     <div class="m-sub">Interview Loader · Quant. Assessor · Qual. Assessor · Qual. Evaluator · Meta Reviewer</div>
   </div>
   <div class="metric-card">
@@ -1096,7 +1096,8 @@
     }
 
     // ---- Meta Review ----
-    const meta = data.meta_review || '';
+    // Strip markdown code fences before parsing
+    const meta = (data.meta_review || '').replace(/```(?:xml)?\s*/gi, '').replace(/```/g, '').trim();
     const diagMatch = meta.match(/<diagnosis>\s*(\d+)\s*<\/diagnosis>/);
     const sevMatch  = meta.match(/<severity>\s*(\d+)\s*<\/severity>/);
     const expMatch  = meta.match(/<explanation>([\s\S]*?)<\/explanation>/);
