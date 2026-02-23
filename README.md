@@ -255,8 +255,8 @@ Each metric is scored 1–5 where 5 = no errors.
 
 ## Author
 
-**Samin Mahdipour Aghabagher** — [@Precioux](https://github.com/Precioux)
-**Xinhui Li** — [@XinhuiLi](https://github.com/XinhuiLi)
+- **Samin Mahdipour Aghabagher** — [@Precioux](https://github.com/Precioux)
+- **Xinhui Li** — [@XinhuiLi](https://github.com/XinhuiLi)
 
 
 
