@@ -106,8 +106,8 @@ Score: [1-5]"""
                     "top_k": 20,
                     "top_p": 0.9,
                     "repeat_penalty": 1.3,   # prevents repetition loops
-                    "num_predict": 120,       # score + brief explanation is all we need
-                    "stop": ["Score:", "\n\n\n"]
+                    "num_predict": 150,       # score + brief explanation is all we need
+                    "stop": ["\n\n\n"]
                 }
             }
             reqs[label] = request

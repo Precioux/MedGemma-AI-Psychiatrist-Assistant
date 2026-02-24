@@ -57,16 +57,23 @@ class QuantitativeAssessorZ:
 
         response = requests.post(
             "http://localhost:11434/api/generate",
-            json={"model": self.model, "prompt": prompt.strip()},
-            stream=True
+            json={
+                "model": self.model,
+                "prompt": prompt.strip(),
+                "stream": False,
+                "options": {
+                    "temperature": 0,
+                    "num_predict": 1500,
+                    "stop": ["</answer>"]
+                }
+            },
+            timeout=180
         )
 
-        full_response = ""
-        for line in response.iter_lines():
-            if line:
-                chunk = line.decode("utf-8")
-                data = json.loads(chunk)
-                full_response += data.get("response", "")
+        full_response = response.json().get("response", "")
+        # Ensure closing tag is present for parser
+        if "<answer>" in full_response and "</answer>" not in full_response:
+            full_response += "</answer>"
 
         return full_response
 

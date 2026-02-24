@@ -1009,25 +1009,43 @@
     ];
 
     const qData = data.quantitative_score;
+    console.log('[DEBUG] quantitative_score raw:', qData);
     const grid  = document.getElementById('phqGrid');
     grid.innerHTML = '';
     let total = 0;
 
-    // Try to extract JSON from <answer> tags, or find raw JSON object in string
+    // Try to extract JSON from various formats the model might return
     let parsedQ = null;
     if (typeof qData === 'string') {
-      // Try <answer> tags first
-      const answerMatch = qData.match(/<answer>([\s\S]*?)<\/answer>/);
-      let jsonStr = answerMatch ? answerMatch[1].trim() : null;
+      let jsonStr = null;
 
-      // If no <answer> tags, find the first { ... } JSON block
+      // Strip ```json ... ``` code fences
+      const fenceMatch = qData.match(/```(?:json)?\s*([\s\S]*?)```/);
+      if (fenceMatch) jsonStr = fenceMatch[1].trim();
+
+      // Strip <thinking>...</thinking> and try <answer> tags
+      if (!jsonStr) {
+        const noThinking = qData.replace(/<thinking>[\s\S]*?<\/thinking>/gi, '').trim();
+        const answerMatch = noThinking.match(/<answer>([\s\S]*?)<\/answer>/i);
+        jsonStr = answerMatch ? answerMatch[1].trim() : null;
+        // fallback: find first { ... } block after stripping thinking
+        if (!jsonStr) {
+          const jsonMatch = noThinking.match(/\{[\s\S]*\}/);
+          jsonStr = jsonMatch ? jsonMatch[0] : null;
+        }
+      }
+
+      // Final fallback: find any { ... } block in raw string
       if (!jsonStr) {
         const jsonMatch = qData.match(/\{[\s\S]*\}/);
         jsonStr = jsonMatch ? jsonMatch[0] : null;
       }
 
       if (jsonStr) {
-        try { parsedQ = JSON.parse(jsonStr); } catch(e) { parsedQ = null; }
+        try { parsedQ = JSON.parse(jsonStr); } catch(e) {
+          console.log('[DEBUG] JSON parse failed:', e, jsonStr);
+          parsedQ = null;
+        }
       }
     } else if (typeof qData === 'object' && qData !== null) {
       parsedQ = qData;
@@ -1036,9 +1054,10 @@
     PHQ_KEYS.forEach(([key, label]) => {
       let val;
       if (parsedQ && parsedQ[key] !== undefined) {
-        const score = parsedQ[key].score;
-        val = (score === 'N/A' || score === null) ? 'N/A' : score;
-        if (typeof score === 'number') total += score;
+        const raw = parsedQ[key].score ?? parsedQ[key];
+        const score = (raw === 'N/A' || raw === null || raw === undefined) ? 'N/A' : parseInt(raw, 10);
+        val = (score === 'N/A' || isNaN(score)) ? 'N/A' : score;
+        if (typeof val === 'number') total += val;
       } else {
         val = 'N/A';
       }
@@ -1165,10 +1184,10 @@
       .replace(/>/g, '&gt;');
   }
 
-  // Renders qualitative output — handles markdown, XML tags, and ```xml fenced blocks
+  // Renders qualitative output — handles markdown, XML tags, and ```xml/```json fenced blocks
   function formatQualitative(text) {
-    // Strip markdown code fences (```xml ... ``` or ``` ... ```)
-    text = text.replace(/```(?:xml)?\s*/gi, '').replace(/```/g, '').trim();
+    // Strip ALL markdown code fences first (```json, ```xml, ```, etc.)
+    text = text.replace(/```[\w]*\n?/g, '').replace(/```/g, '').trim();
 
     const SECTION_LABELS = {
       overall:    '🧠 Overall Impression',
